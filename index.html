@@ -3,37 +3,174 @@
 <head>
 <meta charset="UTF-8">
 <title>YouTube Audio Downloader</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Geologica:wght@400;500;700&display=swap" rel="stylesheet">
+<!-- Google Material Symbols Rounded -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
+
 <style>
-body { font-family: sans-serif; background: #111; color: #eee; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-input, select, button { margin: 5px; padding: 10px; width: 300px; }
-button { background: #28a745; color: #fff; border: none; border-radius: 5px; cursor: pointer; }
-button:hover { background: #218838; }
+  /* Base styling */
+  body {
+    font-family: 'Geologica', sans-serif;
+    background: linear-gradient(135deg, #1e1e1e, #2c2c3e);
+    color: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding: 50px 20px;
+    transition: background 0.5s ease;
+  }
+
+  h1 {
+    font-weight: 500;
+    margin-bottom: 30px;
+    background: linear-gradient(90deg, royalblue, cyan);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 2.5rem;
+    text-align: center;
+    animation: textPulse 2s infinite alternate;
+  }
+
+  @keyframes textPulse {
+    0% { filter: blur(0px); }
+    100% { filter: blur(1px); }
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 420px;
+    position: relative;
+  }
+
+  label {
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #ccc;
+    display: flex;
+    align-items: center;
+  }
+
+  label .material-symbols-rounded {
+    margin-right: 5px;
+    font-size: 16px;
+    color: #00bcd4;
+  }
+
+  input, select, button {
+    padding: 12px 18px;
+    border-radius: 30px;
+    border: none;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.3s ease;
+  }
+
+  input, select {
+    margin-bottom: 12px;
+    background: #2b2b2b;
+    color: #fff;
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+  }
+
+  input:focus, select:focus {
+    box-shadow: 0 0 10px #00bcd4;
+  }
+
+  input::placeholder {
+    color: #888;
+  }
+
+  button {
+    background: linear-gradient(90deg, #2196f3, #00bcd4);
+    color: white;
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  button:hover {
+    background: linear-gradient(90deg, #00bcd4, #2196f3);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,188,212,0.5);
+  }
+
+  button .material-symbols-rounded {
+    margin-left: 8px;
+    font-size: 20px;
+    transition: transform 0.3s ease;
+  }
+
+  button:hover .material-symbols-rounded {
+    transform: translateX(4px);
+  }
+
+  footer {
+    margin-top: 60px;
+    font-size: 12px;
+    color: #aaa;
+    text-align: center;
+    max-width: 400px;
+  }
+
 </style>
 </head>
 <body>
+
 <h1>YouTube Audio Downloader</h1>
-<input id="url" type="text" placeholder="YouTube URL">
-<select id="format">
-  <option value="mp3">MP3</option>
-  <option value="wav">WAV</option>
-  <option value="flac">FLAC</option>
-  <option value="mp4">MP4</option>
-</select>
-<input id="bitrate" type="text" placeholder="Bitrate (e.g. 128k)" value="128k">
-<input id="samplerate" type="text" placeholder="Sample rate (e.g. 44100)" value="44100">
-<button id="download">Download</button>
+
+<div class="form-group">
+  <label for="url"><span class="material-symbols-rounded">link</span>YouTube URL</label>
+  <input type="text" id="url" placeholder="Paste YouTube URL here">
+</div>
+
+<div class="form-group">
+  <label for="format"><span class="material-symbols-rounded">audio_file</span>Audio Format</label>
+  <select id="format">
+    <option value="mp3">MP3</option>
+    <option value="wav">WAV</option>
+    <option value="flac">FLAC</option>
+    <option value="mp4">MP4</option>
+  </select>
+</div>
+
+<div class="form-group">
+  <label for="bitrate"><span class="material-symbols-rounded">speed</span>Bitrate</label>
+  <input type="text" id="bitrate" placeholder="e.g. 128k" value="128k">
+</div>
+
+<div class="form-group">
+  <label for="samplerate"><span class="material-symbols-rounded">tune</span>Sample Rate</label>
+  <input type="text" id="samplerate" placeholder="e.g. 44100" value="44100">
+</div>
+
+<button id="download">Download Audio <span class="material-symbols-rounded">file_download</span></button>
+
+<footer>
+  For personal use only, please. Requires Vercel-hosted Node backend.
+</footer>
 
 <script>
-document.getElementById('download').addEventListener('click', () => {
-  const url = encodeURIComponent(document.getElementById('url').value);
-  const format = document.getElementById('format').value;
-  const bitrate = document.getElementById('bitrate').value;
-  const samplerate = document.getElementById('samplerate').value;
+  const downloadBtn = document.getElementById('download');
+  downloadBtn.addEventListener('click', () => {
+    const url = encodeURIComponent(document.getElementById('url').value);
+    const format = document.getElementById('format').value;
+    const bitrate = document.getElementById('bitrate').value;
+    const samplerate = document.getElementById('samplerate').value;
 
-  if (!url) return alert('Enter a YouTube URL');
+    if(!url) return alert("Please enter a valid YouTube URL.");
 
-  window.location.href = `/api/download?url=${url}&format=${format}&bitrate=${bitrate}&samplerate=${samplerate}`;
-});
+    window.location.href = `/api/download?url=${url}&format=${format}&bitrate=${bitrate}&samplerate=${samplerate}`;
+  });
 </script>
+
 </body>
 </html>
